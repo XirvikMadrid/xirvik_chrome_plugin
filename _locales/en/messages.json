@@ -355,5 +355,11 @@
    },
    "enable":  {
       "message": "Enable extension"
+   },
+   "you_can_check_tutorial": {
+      "message": "You can check our plugin tutorial "
+   },
+   "tutorial_here": {
+      "message": "here"     
    }
 }

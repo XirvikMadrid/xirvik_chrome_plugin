@@ -167,11 +167,12 @@ box
 	margin: 0px auto;
 }
 
-#call-wizard, #call-parser
+#call-wizard, #call-parser, #tutorial-here
 {
 	border-bottom: 1px dashed blue;
 	color: blue;
 	cursor: pointer;
+	text-decoration: none;
 }
 
             /* */
