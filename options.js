@@ -198,6 +198,7 @@ net.xirvik.seedbox = (function(my)
 			$("#console").prop('checked',my.extension.options.console);
 			$("#promos").prop('checked',my.isXivikConfiguration() ? my.extension.options.promos : true);
 			this.correctPromo();
+			$("#enabled").prop('checked',my.extension.options.enabled);
 			$("#upload-timeout").val(my.extension.options.timeout);
 			$(["#context-capture-on", "#context-capture-force", "#context-capture-off"][my.extension.options.capture]).prop("checked", true);
 		},
@@ -219,6 +220,7 @@ net.xirvik.seedbox = (function(my)
 				dirs: $("#upload-dirs").prop('checked'),
 				console: $("#console").prop('checked'),
 				promos: $("#promos").prop('checked'),
+				enabled: $("#enabled").prop('checked'),
 				timeout: parseInt($("#upload-timeout").val()),
 				capture: $("#context-capture-on").prop('checked') ? 0 :
 					$("#context-capture-force").prop('checked') ? 1 : 2,

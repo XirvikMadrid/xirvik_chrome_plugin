@@ -11,7 +11,7 @@ net.xirvik.seedbox = (function(my)
 		
 		onMouseDown: function(e)
 		{
-			if( (e.which==1) && !e.metaKey && !e.shiftKey && !e.ctrlKey && !e.altKey )
+			if( (e.which==1) && !e.metaKey && !e.shiftKey && !e.ctrlKey && !e.altKey && my.extension.options.enabled )
 			{
 				var target = e.target;
 				while( target && target.tagName && (target.tagName.toLowerCase() != "a") )

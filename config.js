@@ -20,8 +20,9 @@ net.xirvik.seedbox = (function(my)
 			labels:    false,       /* Edit labels before uploading each torrent */
 			dirs:      false,       /* Edit directories before uploading each torrent */
 			timeout:   15,          /* Timeout value, in seconds, for server connections */
-			console:   true,       /* Show console output */
+			console:   true,        /* Show console output */
 			promos:    true,        /* keep track of promo messages? */
+			enabled:   true	 	/* is extension enabled */
 		},
 		notificationDelay: 5000,
 		confFilter: "*://*.xirvik.com/browsers_addons/get_addon_config.php",

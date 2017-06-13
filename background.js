@@ -271,7 +271,7 @@ net.xirvik.seedbox = (function(my)
 
 		isPromoShow: function()
 		{
-			return( !my.extension.isXivikConfiguration() || my.getOption("promos") );
+			return( (!my.extension.isXivikConfiguration() || my.getOption("promos")) && my.getOption("enabled") );
 		},
 
 		promoThread: function()
@@ -310,8 +310,12 @@ net.xirvik.seedbox = (function(my)
 			my.storage.put("options",this.options);
 			chrome.tabs.query( {}, function(tabs) 
 			{
-				chrome.tabs.sendMessage(tabs[0].id, { type: "optionschanged", options: my.extension.options });
-			});			
+				for(var i = 0; i < tabs.length; i++)
+				{
+					chrome.tabs.sendMessage(tabs[i].id, { type: "optionschanged", options: my.extension.options });
+				}
+			});
+			my.extension.options['enabled'] ? chrome.browserAction.enable() : chrome.browserAction.disable();
 		},
 
 		onContextMenu: function(e)
@@ -355,7 +359,7 @@ net.xirvik.seedbox = (function(my)
 		makeMenu: function()
 		{
 			chrome.contextMenus.removeAll();
-			if(this.options.capture<=1)
+			if((this.options.capture<=1) && this.options.enabled)
 			{
 				if(this.options.servers.length==1)
 					this.createContextMenuItem(0);
@@ -375,7 +379,20 @@ net.xirvik.seedbox = (function(my)
 							my.extension.createContextMenuItem(i,root);
 					});
 	                        }
-			}	                        
+			}
+			chrome.contextMenus.create(
+			{
+				title: my.t("enable"), 
+				contexts: ["browser_action"],
+				type: "checkbox",
+				checked: my.getOption('enabled'),
+				onclick: function(info) 
+				{
+					my.extension.options['enabled'] = info.checked;
+					my.extension.setOptions();
+					my.extension.makeMenu();
+      				}
+			});
 		},
 
 		requestHandler: function(request, sender, sendResponse)
@@ -752,7 +769,10 @@ net.xirvik.seedbox = (function(my)
 
 		configHandler: function(details)
 		{
-			if( !my.extension.configInProgress && (details.type != "xmlhttprequest") && (details.tabId>=0) )
+			if( !my.extension.configInProgress && 
+				(details.type != "xmlhttprequest") && 
+				(details.tabId>=0) &&
+				my.extension.options.enabled )
 			{
 				my.extension.configInProgress = true;
 				var type = null;
@@ -809,7 +829,11 @@ net.xirvik.seedbox = (function(my)
 
 		torrentHandler: function(details)
 		{
-			if((details.type != "xmlhttprequest") && (details.tabId>=0) && my.getOption('click') && my.extension.options.servers.length)
+			if((details.type != "xmlhttprequest") && 
+				(details.tabId>=0) && 
+				my.getOption('click') && 
+				my.extension.options.servers.length &&
+				my.extension.options.enabled)
 			{
 	                	var isTorrent = false;
 	                	var tName = details.url.match(/\.torrent$/i);
@@ -853,6 +877,7 @@ net.xirvik.seedbox = (function(my)
 				urls: ["*://*/*"]
 			}, ["responseHeaders", "blocking"] );
 			this.makeMenu();
+			this.setOptions();
 			setInterval( this.promoThread, my.conf.promoInterval );
 		}
 	};
