@@ -76,10 +76,10 @@ net.xirvik.seedbox = (function(my)
 						}]],
 						id: 155
 					}),
-					headers:
-					{
-						"Content-Type": "application/json; charset=UTF-8", 
-					},
+//					headers:
+//					{
+//						"Content-Type": "application/json; charset=UTF-8", 
+//					},
 					success: function( json, req, options )
 					{
 						if(json.result)
