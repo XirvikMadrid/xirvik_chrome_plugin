@@ -76,10 +76,10 @@ net.xirvik.seedbox = (function(my)
 						}]],
 						id: 155
 					}),
-//					headers:
-//					{
-//						"Content-Type": "application/json; charset=UTF-8", 
-//					},
+					headers:
+					{
+						"Content-Type": "application/json", 
+					},
 					success: function( json, req, options )
 					{
 						if(json.result)
@@ -108,7 +108,7 @@ net.xirvik.seedbox = (function(my)
 				data: "{\"method\":\"auth.login\",\"params\":[\"deluge\"],\"id\":2}",
 				headers:
 				{
-					"Content-Type": "application/json; charset=UTF-8", 
+					"Content-Type": "application/json", 
 				},
 				error: function( status )
 				{
