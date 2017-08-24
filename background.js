@@ -866,7 +866,7 @@ net.xirvik.seedbox = (function(my)
 
 		init: function()
 		{
-			this.options = my.storage.get("options") || my.conf.options_default;
+			this.options = my.merge( my.conf.options_default, my.storage.get("options") );
 			chrome.runtime.onMessage.addListener( this.requestHandler );
 			chrome.webRequest.onHeadersReceived.addListener( this.configHandler,
 			{

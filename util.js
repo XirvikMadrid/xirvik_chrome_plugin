@@ -2,6 +2,26 @@
 if(!net.xirvik) net.xirvik = {};
 net.xirvik.seedbox = (function(my) 
 {
+	my.merge = function(target, source) 
+	{
+		if( typeof target !== 'object' ) 
+		{
+			target = {};
+    		}
+		if( typeof source !== 'object' ) 
+		{
+			source = {};
+    		}
+		for(var property in source) 
+		{
+		        if( source.hasOwnProperty(property) ) 
+		        {
+				target[ property ] = source[ property ];
+        		}
+		}
+		return(target);
+	};
+
 	my.getOption = function( opt )
 	{
 		return( my.extension ? my.extension.options[opt] : my.conf.options_default[opt] );
