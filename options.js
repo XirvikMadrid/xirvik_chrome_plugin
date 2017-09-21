@@ -328,7 +328,7 @@ net.xirvik.seedbox = (function(my)
 				content: '&nbsp;',
 				closeBtn: false,
 				openEffect: 'none',
-				closeEffect: 'none',				
+				closeEffect: 'none',
 				helpers:  
 				{
 				        overlay: 

@@ -247,7 +247,7 @@ net.xirvik.seedbox = (function(my)
 			chrome.tabs.query( { url: my.addslash(url), currentWindow: true }, function(tabs) 
 			{
 				if(tabs.length)
-					chrome.tabs.update(tabs[0].id, { selected: true });
+					chrome.tabs.update(tabs[0].id, { active: true });
 				else
 					chrome.tabs.create({"url" : url});
 			});			
@@ -423,61 +423,24 @@ net.xirvik.seedbox = (function(my)
 		
 		showNotification: function( theme, text, url, isPromo )
 		{
-			if(window.webkitNotifications)
+			chrome.notifications.create(
 			{
-				var notification = window.webkitNotifications.createNotification('images/xirvik-32.png', theme, text);
-				notification.show();
-				if(isPromo)
-					notification.onclick = function(e)
-		       			{
-			       			e.currentTarget.close();
-		       				my.extension.onPromoClick();
-		        		}
-				else
-				{
-					if(url)
-				       	{
-			       			notification.onclick = function()
-			       			{
-			       				my.extension.openURL(url);
-			        		};
-					}
-					notification.ondisplay = function(e)
-					{ 
-						setTimeout( function()
-						{
-							e.currentTarget.close();
-						}, my.conf.notificationDelay);
-					};
-				}				
-			}
-			else
+			 	title: theme,
+				type: "basic",
+				message: text,
+				iconUrl: chrome.extension.getURL("images/xirvik-32.png")
+			}, function(id)
 			{
-				var notification = new Notification( theme, { icon: "images/xirvik-32.png", body: text } );
-				if(isPromo)
-					notification.onclick = function(e)
-		       			{
-			       			e.currentTarget.close();
-		       				my.extension.onPromoClick();
-		        		}
-				else
-				{
-					if(url)
-				       	{
-			       			notification.onclick = function()
-			       			{
-			       				my.extension.openURL(url);
-			        		};
-					}
-					notification.onshow = function(e)
-					{ 
-						setTimeout( function()
-						{
-							e.currentTarget.close();
-						}, my.conf.notificationDelay);
-					};
+				my.extension.notifications[id] = { promo: isPromo, url: url };
+				if(!isPromo)
+				{ 
+					setTimeout( function()
+					{
+						chrome.notifications.clear(id);
+						delete my.extension.notifications[id];
+					}, my.conf.notificationDelay);
 				}
-			}
+			});
 		},
 
 		download: function( options, callback, server )
@@ -862,7 +825,32 @@ net.xirvik.seedbox = (function(my)
 					return( { redirectUrl: 'javascript:void()' } );
 				}
 			}
-		},							
+		},
+
+		onNotificationClick: function(id)
+		{
+			var notification = my.extension.notifications[id];
+			if(notification)
+			{
+				chrome.notifications.clear(id);
+				if(notification.promo)
+				{
+					my.extension.onPromoClick();
+				}
+				else
+				{
+					if(notification.url)
+						my.extension.openURL(notification.url);
+				}
+				delete my.extension.notifications[id];
+			}
+		},
+
+		setupNotifications: function()
+		{
+			this.notifications = {};
+			chrome.notifications.onClicked.addListener( this.onNotificationClick );
+		},
 
 		init: function()
 		{
@@ -878,6 +866,7 @@ net.xirvik.seedbox = (function(my)
 			}, ["responseHeaders", "blocking"] );
 			this.makeMenu();
 			this.setOptions();
+			this.setupNotifications();
 			setInterval( this.promoThread, my.conf.promoInterval );
 		}
 	};
