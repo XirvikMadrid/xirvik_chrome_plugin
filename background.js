@@ -13,7 +13,8 @@ net.xirvik.seedbox = (function(my)
 			"rutorrent 3.x": 'ruTorrentUpload',
 			"deluge": 'delugeUpload',
 			"torrentflux-b4rt": 'torrentFluxUpload',
-			"utorrent": 'uTorrentUpload'
+			"utorrent": 'uTorrentUpload',
+			"qbittorrent": 'qBittorrentUpload'
 		},
 
 		ruTorrentUpload: function( server, options )
@@ -46,6 +47,96 @@ net.xirvik.seedbox = (function(my)
 				{
 					if(my.getOption('messageuf'))					
 						my.standardErrorHandling(status,server.url,my.t("torrent_upload_fail"));
+				}
+			});
+		},
+
+		qBittorentGetFilters: function()
+		{
+			var ret = { urls: [] };
+			for( var i in this.qBittorrentFilteredURLs )
+				ret.urls.push( i+'*' );
+			return(ret);
+		},
+
+		qBittorentSetupFilters: function(url)
+		{
+			if( !this.qBittorrentFilteredURLs[url] )
+			{
+				this.qBittorrentFilteredURLs[url] = true;
+				if(chrome.webRequest.onBeforeSendHeaders.hasListener(this.changeReferer))
+					chrome.webRequest.onBeforeSendHeaders.removeListener(this.changeReferer);
+				chrome.webRequest.onBeforeSendHeaders.addListener(this.changeReferer, this.qBittorentGetFilters(),
+					["requestHeaders", "blocking"] );
+			}
+		},
+
+		changeReferer: function(details)
+		{
+			details.requestHeaders.push(
+			{
+				name: 'Referer',
+				value: details.url
+			});
+			details.requestHeaders.push(
+			{
+				name: 'Origin',
+				value: details.url
+			});
+			return(
+			{
+				requestHeaders: details.requestHeaders
+			});
+		},
+
+		qBittorrentUpload: function( server, options )
+		{
+			var url = my.addslash(server.url);
+			this.qBittorentSetupFilters(url);
+			my.ajax(
+			{
+				'url': url+'login',
+				base: server.url,
+				method: 'POST',
+				data: "username="+encodeURIComponent(server.user)+"&password="+encodeURIComponent(server.pass),
+				headers:
+				{
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				error: function( status )
+				{
+					if(my.getOption('messageuf'))					
+						my.standardErrorHandling(status, server.url, my.t("torrent_upload_fail"));
+				},
+				success: function()
+				{
+					var path = null;
+					var formData = new FormData();
+					if(options['torrents_start_stopped'])
+						formData.append("paused","true");
+					if(options.magnet)
+					{
+						formData.append("urls", options.data);
+						path = 'command/download';
+					}
+					else
+					{
+						formData.append("torrents", options.data, options.name);
+						path = 'command/upload';
+					}
+					my.ajax(
+					{
+						'url': url+path,
+						base: server.url,
+						method: 'POST',
+						data: formData,
+						success: my.standardSuccessHandling,
+						error: function( status )
+						{
+							if(my.getOption('messageuf'))					
+								my.standardErrorHandling(status,server.url,my.t("torrent_upload_fail"));
+						}
+					});
 				}
 			});
 		},
@@ -511,6 +602,7 @@ net.xirvik.seedbox = (function(my)
 
 		retrieveOptions: function( server, options, callback )
 		{
+			options.torrents_start_stopped = my.getOption("nostart");
 			switch(server.client)
 			{
 				case "rutorrent":
@@ -608,8 +700,6 @@ net.xirvik.seedbox = (function(my)
 						});
 						break;
 					}
-					else
-						options.torrents_start_stopped = my.getOption("nostart");
 				}
 				default:
 				{
@@ -867,6 +957,7 @@ net.xirvik.seedbox = (function(my)
 			this.makeMenu();
 			this.setOptions();
 			this.setupNotifications();
+			this.qBittorrentFilteredURLs = {};
 			setInterval( this.promoThread, my.conf.promoInterval );
 		}
 	};

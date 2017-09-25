@@ -24,7 +24,7 @@ net.xirvik.seedbox = (function(my)
 
 	my.getOption = function( opt )
 	{
-		return( my.extension ? my.extension.options[opt] : my.conf.options_default[opt] );
+		return( my.extension && my.extension.options ? my.extension.options[opt] : my.conf.options_default[opt] );
 	};
 
 	my.storage = 
@@ -100,8 +100,6 @@ net.xirvik.seedbox = (function(my)
 		xhr.open(options.method || 'GET', options.url, true, options.user, options.pass);
 		for( var hdr in (options.headers || {}) )
 			xhr.setRequestHeader( hdr, options.headers[hdr] );
-//		if(options.user)			
-//			xhr.setRequestHeader("Authorization", "Basic "+btoa(options.user+':'+options.pass));
 		if(options.mimeType)
 			xhr.overrideMimeType(options.mimeType);
 		var timer = null;

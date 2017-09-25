@@ -21,9 +21,9 @@ net.xirvik.seedbox = (function(my)
 					var isMagnet = target.href.match(/^magnet:/i);
 					if( my.extension.options.click && isMagnet )
 					{
-						chrome.runtime.sendMessage( { type: 'loadmagnet', url: target.href } );	
 				        	e.preventDefault();
 						e.stopPropagation();
+						chrome.runtime.sendMessage( { type: 'loadmagnet', url: target.href } );	
 						return(false);
 					}
 				}					

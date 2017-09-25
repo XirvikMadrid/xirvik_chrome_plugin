@@ -303,13 +303,13 @@
       "message": "Torrent has been uploaded successfully."
    },
    "type_of_client": {
-      "message": "Type of client this setting uses. Note: if should conform to seedbox URL."
+      "message": "Type of client this setting uses. Note: it should conform to seedbox URL."
    },
    "upload_failure": {
       "message": "Upload failed"
    },
    "upload_options_rutorrent_only": {
-      "message": "Upload options (rutorrent & deluge only):"
+      "message": "Upload options (rutorrent, qbittorent & deluge only):"
    },
    "upload_start": {
       "message": "Upload started"
