@@ -1,4 +1,4 @@
-﻿if(typeof(net) == "undefined") var net = {};
+if(typeof(net) == "undefined") var net = {};
 if(!net.xirvik) net.xirvik = {};
 net.xirvik.seedbox = (function(my) 
 {
@@ -196,7 +196,7 @@ net.xirvik.seedbox = (function(my)
                         	user: server.user,
        	                	pass: server.pass,
 				method: 'POST',
-				data: "{\"method\":\"auth.login\",\"params\":[\"deluge\"],\"id\":2}",
+				data: "{\"method\":\"auth.login\",\"params\":[\""+server.deluge_pass+"\"],\"id\":2}",
 				headers:
 				{
 					"Content-Type": "application/json", 
@@ -346,13 +346,16 @@ net.xirvik.seedbox = (function(my)
 
 		onPromoClick: function()
 		{
-			var promo = my.storage.get('promo1') || { url: null, clicked: false, modified: null }
-			if(promo.url)
+			my.storage.get('promo1', function( promo )
 			{
-				promo.clicked = true;
-				my.storage.put('promo1', promo);
-				chrome.tabs.create({"url" : promo.url});
-			}
+				promo = promo || { url: null, clicked: false, modified: null };
+				if(promo.url)
+				{
+					promo.clicked = true;
+					my.storage.put('promo1', promo);
+					chrome.tabs.create({"url" : promo.url});
+				}
+			});
 		},
 
 		isXivikConfiguration: function()
@@ -369,29 +372,26 @@ net.xirvik.seedbox = (function(my)
 		{
 			if(my.extension.isPromoShow())
 			{
-				var promo = my.storage.get('promo1') || { url: null, clicked: false, modified: null }
-//				if(!promo.clicked && promo.modified)
-//				{
-//					var dt = new Date( promo.modified );
-//					if( (new Date()).getTime()-dt.getTime() > my.conf.promoStalledInterval )
-//						promo.modified = null;
-//				}
-				my.ajax(
+				my.storage.get('promo1', function( promo )
 				{
-					url: my.conf.promoURL + "?" + new Date().getTime(),
-					ifModifiedSince: promo.modified,
-
-					success: function( data, req )
+					var promo = promo || { url: null, clicked: false, modified: null };
+					my.ajax(
 					{
-						var nfo = req.responseText.split('\n');
-						if(nfo.length>=3)
+						url: my.conf.promoURL + "?" + new Date().getTime(),
+						ifModifiedSince: promo.modified,
+
+						success: function( data, req )
 						{
-							my.storage.put('promo1', { url: my.trim(nfo[2]), clicked: false, modified: req.getResponseHeader("Last-Modified") });
-							my.extension.showNotification( my.trim(nfo[0]), my.trim(nfo[1]), my.trim(nfo[2]), true );
+							var nfo = req.responseText.split('\n');
+							if(nfo.length>=3)
+							{
+								my.storage.put('promo1', { url: my.trim(nfo[2]), clicked: false, modified: req.getResponseHeader("Last-Modified") });
+								my.extension.showNotification( my.trim(nfo[0]), my.trim(nfo[1]), my.trim(nfo[2]), true );
+							}
 						}
-					}
+					});
 				});
-			}				
+			}
 		},
 
 		setOptions: function(options)
@@ -403,7 +403,13 @@ net.xirvik.seedbox = (function(my)
 			{
 				for(var i = 0; i < tabs.length; i++)
 				{
-					chrome.tabs.sendMessage(tabs[i].id, { type: "optionschanged", options: my.extension.options });
+					chrome.tabs.sendMessage(tabs[i].id, { type: "optionschanged", options: my.extension.options } , function()
+					{
+						if(chrome.runtime.lastError) 
+						{
+//							 console.warn("Whoops.. " + chrome.runtime.lastError.message);
+						}
+					});
 				}
 			});
 			my.extension.options['enabled'] ? chrome.browserAction.enable() : chrome.browserAction.disable();
@@ -942,23 +948,28 @@ net.xirvik.seedbox = (function(my)
 			chrome.notifications.onClicked.addListener( this.onNotificationClick );
 		},
 
-		init: function()
+		initPrim: function(options)
 		{
-			this.options = my.merge( my.conf.options_default, my.storage.get("options") );
-			chrome.runtime.onMessage.addListener( this.requestHandler );
-			chrome.webRequest.onHeadersReceived.addListener( this.configHandler,
+			my.extension.options = my.merge( my.conf.options_default, options );
+			chrome.runtime.onMessage.addListener( my.extension.requestHandler );
+			chrome.webRequest.onHeadersReceived.addListener( my.extension.configHandler,
 			{
 				urls: [ my.conf.confFilter ]
 			}, ["responseHeaders", "blocking"]);
-			chrome.webRequest.onHeadersReceived.addListener( this.torrentHandler, 
+			chrome.webRequest.onHeadersReceived.addListener( my.extension.torrentHandler, 
 			{
 				urls: ["*://*/*"]
 			}, ["responseHeaders", "blocking"] );
-			this.makeMenu();
-			this.setOptions();
-			this.setupNotifications();
-			this.qBittorrentFilteredURLs = {};
-			setInterval( this.promoThread, my.conf.promoInterval );
+			my.extension.makeMenu();
+			my.extension.setOptions();
+			my.extension.setupNotifications();
+			my.extension.qBittorrentFilteredURLs = {};
+			setInterval( my.extension.promoThread, my.conf.promoInterval );
+		},
+
+		init: function()
+		{
+			my.storage.get("options", this.initPrim );
 		}
 	};
 

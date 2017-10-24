@@ -361,5 +361,11 @@
    },
    "tutorial_here": {
       "message": "here"     
+   },
+   "webui_password": {
+      "message": "WebUI password (default - 'deluge')"
+   },
+   "webui_password_title": {
+      "message": "Enter here password for Deluge WebUI"
    }
 }

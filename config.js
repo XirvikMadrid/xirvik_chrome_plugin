@@ -17,8 +17,6 @@ net.xirvik.seedbox = (function(my)
 			messagesf: true,        /* Server login failure */
 			messagest: true,        /* Server connection timeout */
 			nostart:   false,       /* Upload without starting the torrent automatically */
-			labels:    false,       /* Edit labels before uploading each torrent */
-			dirs:      false,       /* Edit directories before uploading each torrent */
 			timeout:   15,          /* Timeout value, in seconds, for server connections */
 			console:   true,        /* Show console output */
 			promos:    true,        /* keep track of promo messages? */

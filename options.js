@@ -75,11 +75,14 @@ net.xirvik.seedbox = (function(my)
 		addServersLine: function( server )
 		{
 			if(server.url)
+			{
+				server.deluge_pass = server.deluge_pass || 'deluge';
               			$("#servers").append(
               				$("<tr>").append(
                					$("<td>").attr("width","50%").text(server.url)).append(
                					$("<td>").attr("width","25%").text(server.user)).append(
                      				$("<td>").attr("width","25%").text(server.client)).data(server));
+			}
 		},
 		
 		closeHint: function()
@@ -127,10 +130,8 @@ net.xirvik.seedbox = (function(my)
 
                 	$("#entry #entry_client").off("change").on("change", function()
                 	{
-                		if( $(this).val()=="rutorrent" )
-                			$('#rutorrent_options').show();
-                		else
-                			$('#rutorrent_options').hide();                		
+	                	$(".custom_options").hide();
+                		$('#'+$(this).val()+'_options').show();
                			$.fancybox.update();
                 	});
                 	$("#entry #entry_client").change();
@@ -193,8 +194,6 @@ net.xirvik.seedbox = (function(my)
 			$("#progress-messageuc").prop('checked',my.extension.options.messageuc);
 			$("#progress-messageuf").prop('checked',my.extension.options.messageuf);
 			$("#upload-nostart").prop('checked',my.extension.options.nostart);
-			$("#upload-labels").prop('checked',my.extension.options.labels);
-			$("#upload-dirs").prop('checked',my.extension.options.dirs);
 			$("#console").prop('checked',my.extension.options.console);
 			$("#promos").prop('checked',my.isXivikConfiguration() ? my.extension.options.promos : true);
 			this.correctPromo();
@@ -216,8 +215,6 @@ net.xirvik.seedbox = (function(my)
 				messageuc: $("#progress-messageuc").prop('checked'),
 				messageuf: $("#progress-messageuf").prop('checked'),
 				nostart: $("#upload-nostart").prop('checked'),
-				labels: $("#upload-labels").prop('checked'),
-				dirs: $("#upload-dirs").prop('checked'),
 				console: $("#console").prop('checked'),
 				promos: $("#promos").prop('checked'),
 				enabled: $("#enabled").prop('checked'),
@@ -256,7 +253,8 @@ net.xirvik.seedbox = (function(my)
 					label_type: $("#entry select#label_selection").val(),
 					label: $("#entry input#permanent_label").val(),
 					dir_type: $("#entry select#directory_selection").val(),
-					dir: $("#entry input#permanent_directory").val()
+					dir: $("#entry input#permanent_directory").val(),
+					deluge_pass: $("#entry input#webui_password").val()
 				});
 				my.options.setRows();
 				$.fancybox.close();
@@ -279,6 +277,7 @@ net.xirvik.seedbox = (function(my)
 			$("#entry input#permanent_label").val(server.label);
 			$("#entry select#directory_selection").val(server.dir_type);
 			$("#entry input#permanent_directory").val(server.dir);
+			$("#entry input#webui_password").val(server.deluge_pass);
 			$("#entry select").change();
 
 			$("#entry .save").off("click").on("click", function()
@@ -293,7 +292,8 @@ net.xirvik.seedbox = (function(my)
 					label_type: $("#entry select#label_selection").val(),
 					label: $("#entry input#permanent_label").val(),
 					dir_type: $("#entry select#directory_selection").val(),
-					dir: $("#entry input#permanent_directory").val()                			
+					dir: $("#entry input#permanent_directory").val(),
+					deluge_pass: $("#entry input#webui_password").val()
                 		};
 				row.data(server);
 				row.find("td:eq(0)").text(server.url);
@@ -416,6 +416,7 @@ net.xirvik.seedbox = (function(my)
 					user: $(".wiz_2nd input#wiz_user").val(),
 					pass: $(".wiz_2nd input#wiz_pass").val(),
 					descr: "",
+					deluge_pass: "deluge",
 					client: "rutorrent",
 					url: 'https://'+$(".wiz_2nd input#wiz_host").val()+'/rtorrent'
 				};					

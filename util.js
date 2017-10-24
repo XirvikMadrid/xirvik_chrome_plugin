@@ -1,4 +1,4 @@
-﻿if(typeof(net) == "undefined") var net = {};
+if(typeof(net) == "undefined") var net = {};
 if(!net.xirvik) net.xirvik = {};
 net.xirvik.seedbox = (function(my) 
 {
@@ -29,22 +29,29 @@ net.xirvik.seedbox = (function(my)
 
 	my.storage = 
 	{
-		get : function(key) 
+		get : function(key, callback) 
 		{
-			var ret = null;
-			try { ret = JSON.parse(localStorage.getItem(key)); } catch(e) {}
-        		return(ret);
+			chrome.storage.sync.get(key, function(items)
+			{
+				var ret = null;
+				if(chrome.runtime.lastError || !items || !items[key])
+				{
+					try { ret = JSON.parse(localStorage.getItem(key)); } catch(e) {}		
+				}
+				else
+				{
+					ret = items[key];
+				}
+				callback(ret);
+			});
 	    	},
     	
-		put : function(key, value) 
+		put : function(key, value, callback) 
 		{
-        		try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {}
-		},
-	
-		remove : function(key) 
-		{
-        		localStorage.removeItem(key);
-	    	}
+			var obj = {};
+			obj[key] = value;
+			chrome.storage.sync.set( obj, callback );
+		}
 	};
 
 	my.log = function()
@@ -98,6 +105,9 @@ net.xirvik.seedbox = (function(my)
 	{
 		var xhr = new XMLHttpRequest();
 		xhr.open(options.method || 'GET', options.url, true, options.user, options.pass);
+		xhr.withCredentials = true;
+		xhr.setRequestHeader( "Cache-Control", "max-age=0" );
+		xhr.mozBackgroundRequest = true;
 		for( var hdr in (options.headers || {}) )
 			xhr.setRequestHeader( hdr, options.headers[hdr] );
 		if(options.mimeType)
@@ -117,7 +127,7 @@ net.xirvik.seedbox = (function(my)
 					case 200:
 					{
 						if(options.success)
-						{					
+						{
 							var ret = null;
 							try{ ret = JSON.parse(xhr.response); } catch(e) {};
 							options.success(ret,xhr,options.base);

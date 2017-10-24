@@ -1,4 +1,4 @@
-﻿if(typeof(net) == "undefined") var net = {};
+if(typeof(net) == "undefined") var net = {};
 if(!net.xirvik) net.xirvik = {};
 net.xirvik.seedbox = (function(my) 
 {
