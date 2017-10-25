@@ -108,20 +108,20 @@ net.xirvik.seedbox = (function(my)
 		xhr.withCredentials = true;
 		xhr.setRequestHeader( "Cache-Control", "max-age=0" );
 		xhr.mozBackgroundRequest = true;
+		xhr.timeout = my.getOption('timeout')*1000;
 		for( var hdr in (options.headers || {}) )
 			xhr.setRequestHeader( hdr, options.headers[hdr] );
 		if(options.mimeType)
 			xhr.overrideMimeType(options.mimeType);
-		var timer = null;
 		if(options.responseType)
 			xhr.responseType = options.responseType;
 		if(options.ifModifiedSince)
 			xhr.setRequestHeader("If-Modified-Since", options.ifModifiedSince);
+
 		xhr.onreadystatechange = function(res)
 		{
-			if(timer && (xhr.readyState == 4))
+			if(xhr.readyState == 4)
 			{
-				clearTimeout(timer);
 				switch(xhr.status)
        	    			{
 					case 200:
@@ -143,16 +143,17 @@ net.xirvik.seedbox = (function(my)
 				}
 			}
 		};
-		xhr.send( options.data );
-		timer = setTimeout(function()
+
+		if(options.error)
 		{
-			timer = null;
-		        xhr.abort();
-	        	delete xhr;
-			if(options.error)
+			xhr.ontimeout = function()
+			{
 				options.error(-1,options.base);
-		}, my.getOption('timeout')*1000);  
-	};	
+			};
+		}
+
+		xhr.send( options.data );
+	};
 
 	my.getHost = function( url )
 	{

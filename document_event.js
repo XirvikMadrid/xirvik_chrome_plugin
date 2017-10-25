@@ -95,7 +95,7 @@ net.xirvik.seedbox = (function(my)
 			for( var i in dirlist )
 			{
 				var dir = dirlist[i];
-				$('.xirvik-dlg fieldset label#dirlist').prepend( $('<label>').text(dir) );
+				$('.xirvik-dlg fieldset label#dirlist').append( $('<label>').text(dir) );
 			}
 			$('.xirvik-dlg fieldset label#dirlist label').click( function()
 			{
