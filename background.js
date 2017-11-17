@@ -664,6 +664,7 @@ net.xirvik.seedbox = (function(my)
 			                        	pass: server.pass,
 							success: function( ret )
 							{
+								ret["basedir"] = ret["basedir"] || "";
 								if( (server.label_type=="At runtime") || (server.dir_type=="At runtime") )
 								{
 									var props = 
