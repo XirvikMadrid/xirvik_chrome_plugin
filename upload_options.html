@@ -48,6 +48,10 @@
 				background: #DDDDDD !important;
 				border: 1px dotted rgb(68, 68, 68) !important;
 			}
+			.xirvik-dlg fieldset label.checkbox
+			{
+				height: auto !important;
+			}
 		</style>		
 	</head>	
 	<body>
@@ -55,9 +59,9 @@
                 	<h3 data-i18n='uploading_title'></h3>
                 	<fieldset id='options'>
 				<legend data-i18n='options'></legend>
-				<input type="checkbox" id="not_add_path"></input><span data-i18n='Dont_add_tname'></span><br/>
-				<input type="checkbox" id="torrents_start_stopped"></input><span data-i18n='upload_without_starting'></span><br/>
-				<input type="checkbox" id="fast_resume"></input><span data-i18n='doFastResume'></span>				
+				<label class='checkbox'><input type="checkbox" id="not_add_path"></input> <span data-i18n='Dont_add_tname'></span></label>
+				<label class='checkbox'><input type="checkbox" id="torrents_start_stopped"></input> <span data-i18n='upload_without_starting'></span></label>
+				<label class='checkbox'><input type="checkbox" id="fast_resume"></input> <span data-i18n='doFastResume'></span></label>
 			</fieldset>                	
                 	<fieldset id='labels'>
 				<legend data-i18n='labels'></legend>

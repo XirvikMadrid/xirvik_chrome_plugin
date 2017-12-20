@@ -104,9 +104,15 @@ net.xirvik.seedbox = (function(my)
 	my.ajax = function( options )
 	{
 		var xhr = new XMLHttpRequest();
-		xhr.open(options.method || 'GET', options.url, true, options.user, options.pass);
+		options.method = options.method || 'GET';
+		if(options.method=='GET')
+		{
+			var sep = options.url.indexOf('?') === -1 ? '?' : '&';
+        		options.url = options.url + sep + '_=' + new Date().getTime();
+		}
+		xhr.open(options.method, options.url, true, options.user, options.pass);
 		xhr.withCredentials = true;
-		xhr.setRequestHeader( "Cache-Control", "max-age=0" );
+		xhr.setRequestHeader( "Cache-Control", "private, max-age=0, no-cache, no-store, must-revalidate, proxy-revalidate" );
 		xhr.mozBackgroundRequest = true;
 		xhr.timeout = my.getOption('timeout')*1000;
 		for( var hdr in (options.headers || {}) )
