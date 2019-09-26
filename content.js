@@ -21,6 +21,10 @@ net.xirvik.seedbox = (function(my)
 			{
 				my.extension.options = response;
 				my.log("Options was retrieved.");
+				for(var i = 0; i < my.extension.options.servers.length; i++)
+				{
+					delete my.extension.options.servers[i].menu;
+				}
 				if(callback)
 					callback( my.extension.options );
 			});
