@@ -40,6 +40,14 @@ net.xirvik.seedbox = (function(my)
 			{
 	                	my.options.fill();
                 	});
+	                $("#import").click(function() 
+	                { 
+	                	my.options.do_import();
+	                });
+	                $("#export").click(function() 
+	                { 
+	                	my.options.do_export();
+	                });
 		},
 
 		setButtonState: function()
@@ -162,24 +170,6 @@ net.xirvik.seedbox = (function(my)
 			input.val( input.val()+e.currentTarget.textContent );
 		},
 
-		correctPromo: function()
-		{
-			var servers = [];
-			$("#servers tr:not(.header)").each(function()
-                	{
-				servers.push( $(this).data() );
-			});
-			if(my.isXivikConfiguration(servers))
-			{
-				$("#promos").prop('disabled',false);
-			}
-			else					
-			{
-				$("#promos").prop('checked',true);
-				$("#promos").prop('disabled',true);
-			}
-		},		
-
 		fill: function()
 		{
 			for(var i = 0; i < my.extension.options.servers.length; i++)
@@ -195,14 +185,12 @@ net.xirvik.seedbox = (function(my)
 			$("#progress-messageuf").prop('checked',my.extension.options.messageuf);
 			$("#upload-nostart").prop('checked',my.extension.options.nostart);
 			$("#console").prop('checked',my.extension.options.console);
-			$("#promos").prop('checked',my.isXivikConfiguration() ? my.extension.options.promos : true);
-			this.correctPromo();
 			$("#enabled").prop('checked',my.extension.options.enabled);
 			$("#upload-timeout").val(my.extension.options.timeout);
 			$(["#context-capture-on", "#context-capture-force", "#context-capture-off"][my.extension.options.capture]).prop("checked", true);
 		},
 
-		save: function()
+		sync: function()
 		{
 			my.extension.options = 
 			{
@@ -216,7 +204,6 @@ net.xirvik.seedbox = (function(my)
 				messageuf: $("#progress-messageuf").prop('checked'),
 				nostart: $("#upload-nostart").prop('checked'),
 				console: $("#console").prop('checked'),
-				promos: $("#promos").prop('checked'),
 				enabled: $("#enabled").prop('checked'),
 				timeout: parseInt($("#upload-timeout").val()),
 				capture: $("#context-capture-on").prop('checked') ? 0 :
@@ -227,8 +214,11 @@ net.xirvik.seedbox = (function(my)
                 	{
 				my.extension.options.servers.push( $(this).data() );
 			});
-			if(!my.isXivikConfiguration(my.extension.options.servers))
-				my.extension.options.promos = true;
+		},
+
+		save: function()
+		{
+			my.options.sync();
 			my.extension.store( function() { window.close(); } );
 		},
 
@@ -258,7 +248,6 @@ net.xirvik.seedbox = (function(my)
 				});
 				my.options.setRows();
 				$.fancybox.close();
-				my.options.correctPromo();
 			});
 			my.options.setButtonState();
                 	this.show();
@@ -300,7 +289,6 @@ net.xirvik.seedbox = (function(my)
 				row.find("td:eq(1)").text(server.user);
 				row.find("td:eq(2)").text(server.client);
 				$.fancybox.close();
-				my.options.correctPromo();
                 	});
 
                 	this.show();
@@ -310,7 +298,6 @@ net.xirvik.seedbox = (function(my)
 		{
 			$("#servers tr.current").remove();
 			my.options.setButtonState();
-			my.options.correctPromo();
 		},
 
 		testServer: function()
@@ -349,7 +336,8 @@ net.xirvik.seedbox = (function(my)
 				{
 					$.fancybox.hideLoading();
 					$.fancybox.close();
-					my.extension.showNotification( my.t('info'), my.t('test_passed'), server.url );
+//					my.extension.showNotification( my.t('info'), my.t('test_passed'), server.url );
+					alert(my.t('test_passed'));
 				},
 				error: function( status )
 				{
@@ -379,7 +367,8 @@ net.xirvik.seedbox = (function(my)
 							break;
 						}
 					}
-					my.extension.showNotification( my.t('error'), msg, server.url );
+//					my.extension.showNotification( my.t('error'), msg, server.url );
+					alert(msg);
 				}
 			});
 		},
@@ -444,7 +433,6 @@ net.xirvik.seedbox = (function(my)
 		                        }
 				}
 				my.options.setRows();
-				my.options.correctPromo();
 				$.fancybox.close();
 			});
 
@@ -533,8 +521,89 @@ net.xirvik.seedbox = (function(my)
                         $("#parser", wizbox).show();
 
 			$.fancybox.update();
-		}
+		},
 
+		do_import: function()
+		{
+			$("#import_json").val("");
+			$("#import-type-override").prop('checked', true);
+			$("#import-type-append").prop('checked', false);
+			$("#import_dlg .cancel").off("click").on("click", function()
+                	{	
+                		$.fancybox.close();
+                	});
+			$("#import_dlg .save").off("click").on("click", function()
+                	{	
+                		try
+                		{
+                			var options = JSON.parse($("#import_json").val());
+                			options = my.merge( my.conf.options_default, options );
+                			my.options.sync();
+					if(!$("#import-type-override").prop('checked'))
+					{
+						Array.prototype.unshift.apply(options.servers, my.extension.options.servers);
+					}
+					my.extension.options = options;
+					$("#servers tr:not(.header)").remove();
+					my.options.fill();
+					my.extension.store( $.fancybox.close );
+                		}
+                		catch(e)
+                		{
+                			alert(my.t('import_fail'));
+                		}
+                	});
+
+			$.fancybox(
+			{
+				type: "inline",
+                    		content: $('#import_dlg'),
+				height: 250,
+				width: 500,
+				padding: 0,
+				closeBtn: false,
+				openEffect: 'none',
+				closeEffect: 'none',				
+				helpers:  
+				{
+				        overlay : null
+				}
+			});
+		},
+
+		do_export: function()
+		{
+			$("#export_json").val(JSON.stringify(my.extension.options));
+			$("#export_dlg .cancel").off("click").on("click", function()
+                	{
+                		$.fancybox.close();
+                	});
+			$("#export_dlg .copy").off("click").on("click", function()
+                	{
+                		$("#export_json").select();
+                		document.execCommand("copy", false, null);
+                	});
+			
+			$.fancybox(
+			{
+				type: "inline",
+                    		content: $('#export_dlg'),
+				height: 250,
+				width: 500,
+				padding: 0,
+				closeBtn: false,
+				openEffect: 'none',
+				closeEffect: 'none',				
+				helpers:  
+				{
+				        overlay : null
+				},
+				afterShow : function() 
+				{
+					$("#export_json").select();
+				}
+			});
+		}
 	};
 
 	document.addEventListener( "DOMContentLoaded", my.options.init );	

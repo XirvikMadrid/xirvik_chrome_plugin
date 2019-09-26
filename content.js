@@ -31,7 +31,7 @@ net.xirvik.seedbox = (function(my)
 			chrome.runtime.sendMessage( { type: 'setoptions', options: this.options  }, callback );
 		},
 
-		showNotification: function( theme, text, url, isPromo )
+		showNotification: function( theme, text, url )
 		{
 			chrome.runtime.sendMessage( { type: 'notification', theme: theme, text: text, url: url } );
 		}

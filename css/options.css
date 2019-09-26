@@ -1,4 +1,5 @@
-html, body
+html, 
+body
 {
 	min-width: 700px;
 	min-height: 600px;	
@@ -66,7 +67,8 @@ label
 	margin-right: 2px;
 }
 
-.ui-widget#tabs button, .btn-container button
+.xirvik-dlg button,
+.btn-container button
 {
 	font-family: -webkit-small-control;
 	font-size: 14px;		
@@ -74,15 +76,19 @@ label
 	margin-top: 0;
 	margin-bottom: 5px;
 	display: inline-block;
+	cursor: pointer;
 }
 
-.ui-widget#tabs button#save
+.xirvik-dlg div.actions
 {
-	float: right;
 	margin-top: 10px;
 	margin-bottom: 0 !important;	
 }
 
+.xirvik-dlg div.actions button#save
+{
+	float: right;
+}
 
 box
 {
@@ -140,7 +146,8 @@ box
 	background: lightgrey;
 }
 
-#servers th, #servers td
+#servers th,
+#servers td
 {
 	text-align: left;
 	font-weight: normal;
@@ -168,7 +175,9 @@ box
 	margin: 0px auto;
 }
 
-#call-wizard, #call-parser, #tutorial-here
+#call-wizard, 
+#call-parser, 
+#tutorial-here
 {
 	border-bottom: 1px dashed blue;
 	color: blue;
@@ -176,18 +185,20 @@ box
 	text-decoration: none;
 }
 
-            /* */
-
-.popup, .wiz_1st, .wiz_2nd, .parser, .selected
+.popup, 
+.wiz_1st, 
+.wiz_2nd, 
+.parser, 
+.selected
 {
 	display: none;
 }
 
 .btn-container
 {
-	float: right;
+	text-align: right;
 	margin-top: 10px;	
-	margin-bottom: 15px;
+	width: 100%;
 }
 
 #entry
@@ -197,9 +208,11 @@ box
 	font-size: 14px;	
 }
 
-#entry input, #entry select, .wiz_2nd input, .wiz_1st select
+#entry input, 
+#entry select, 
+.wiz_2nd input, 
+.wiz_1st select
 {
-	-webkit-box-sizing: border-box;
 	padding: 5px;
 	width: 300px;
 	border-radius: 3px;
@@ -209,7 +222,9 @@ box
 	box-sizing: content-box;
 }
 
-#wizard
+#wizard, 
+#import_dlg,
+#export_dlg
 {
 	padding: 0 15px 15px 15px;
 }
@@ -248,7 +263,36 @@ box
 	color: blue;
 }
 
-.hint_button
+.xirvik-dlg .hint_button
 {
 	width: 22px;
+	padding: 0;
+	margin: 0;
+}
+
+#export_description
+{
+	width: 410px;
+	margin-bottom: 1em;
+}
+
+#export_copy
+{
+	width: 60px;
+}
+
+#import_json, #export_json
+{
+	width: 350px;
+	padding: 5px;
+	border-radius: 3px;
+	border: 1px solid rgb(68, 68, 68);
+	margin-top: 3px;
+	margin-bottom: 1em;
+	box-sizing: border-box;
+}
+
+#export_json
+{
+	margin-bottom: 0;
 }
