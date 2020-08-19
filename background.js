@@ -64,7 +64,6 @@ net.xirvik.seedbox = (function(my)
 			if( !this.refererFilteredURLs[serverUrl] )
 			{
 				this.refererFilteredURLs[serverUrl] = (refererUrl ? refererUrl : serverUrl);
-console.log( 'Setup referer '+this.refererFilteredURLs[serverUrl]+' for the '+serverUrl );
 				if(chrome.webRequest.onBeforeSendHeaders.hasListener(this.changeReferer))
 					chrome.webRequest.onBeforeSendHeaders.removeListener(this.changeReferer);
 				chrome.webRequest.onBeforeSendHeaders.addListener(this.changeReferer, this.refererGetFilters(),
