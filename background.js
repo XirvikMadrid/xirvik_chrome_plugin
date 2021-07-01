@@ -53,7 +53,7 @@ net.xirvik.seedbox = (function(my)
 			details.requestHeaders.push(
 			{
 				name: 'Referer',
-				value: refererUrl
+				value: my.getReferer(refererUrl)
 			});
 			details.requestHeaders.push(
 			{
@@ -475,11 +475,31 @@ net.xirvik.seedbox = (function(my)
 				case 'loadmagnet':
 				{
 					my.extension.retrieveServer( sender.tab.id, request.url, false );
-					break;				
+					break;
 				}
 				case 'notification':
 				{
 					my.extension.showNotification( request.theme, request.text, request.url );
+					break;
+				}
+				case 'ajax':
+				{
+					my.ajax(
+						my.merge( request.options,
+						{
+							success: function( ret )
+							{
+//								sendResponse( { success: true, ret: ret } );
+								chrome.tabs.sendMessage( sender.tab.id, { type: 'ajax', success: true, ret: ret } );
+							},
+							error: function(status)
+							{
+//								sendResponse( { success: true, ret: status } );
+								chrome.tabs.sendMessage( sender.tab.id, { type: 'ajax', success: false, ret: status } );
+                					}
+						})
+					);
+					break;
 				}
 			}
 		},
@@ -623,9 +643,11 @@ net.xirvik.seedbox = (function(my)
 						modes.push("labels");
 					if( modes.length )
 					{
+						var url = my.addslash(server.url);
+						my.extension.refererSetupFilters(url,url);
 						my.ajax(
 						{
-							'url': my.addslash(server.url)+"plugins/_getdir/info.php?mode="+modes.join(";"),
+							'url': url+"plugins/_getdir/info.php?mode="+modes.join(";"),
 							base: server.url,
                         				user: server.user,
 			                        	pass: server.pass,
