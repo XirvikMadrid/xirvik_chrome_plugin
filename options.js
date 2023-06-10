@@ -36,6 +36,14 @@ net.xirvik.seedbox = (function(my)
                 	{ 
                 		my.options.removeServer(); 
                 	});
+                	$("#up-server").click(function() 
+                	{ 
+                		my.options.upServer(); 
+                	});
+                	$("#down-server").click(function() 
+                	{ 
+                		my.options.downServer(); 
+                	});
 			my.extension.load( function()
 			{
 	                	my.options.fill();
@@ -52,7 +60,13 @@ net.xirvik.seedbox = (function(my)
 
 		setButtonState: function()
 		{
-			$("#edit-server, #test-server, #remove-server").prop('disabled', $("#servers tr.current").length==0);
+			var $current = $("#servers tr.current");
+			$("#edit-server, #test-server, #remove-server, #up-server, #down-server").prop('disabled', $current.length==0);
+			if($current.length)
+			{
+				$("#up-server").prop('disabled', $current.prev().prev().length==0);
+				$("#down-server").prop('disabled', $current.next().length==0);
+			}
 		},
 		
 		setRows: function()
@@ -297,6 +311,20 @@ net.xirvik.seedbox = (function(my)
 		removeServer: function()
 		{
 			$("#servers tr.current").remove();
+			my.options.setButtonState();
+		},
+
+		upServer: function()
+		{
+			var $row = $("#servers tr.current");
+			$row.insertBefore($row.prev());
+			my.options.setButtonState();
+		},
+
+		downServer: function()
+		{
+			var $row = $("#servers tr.current");
+			$row.insertAfter($row.next());
 			my.options.setButtonState();
 		},
 

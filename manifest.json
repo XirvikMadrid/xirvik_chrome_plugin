@@ -31,6 +31,6 @@
    "permissions": [ "tabs", "contextMenus", "storage", "notifications", "webRequest", "webRequestBlocking", "http://*/*", "https://*/*" ],
    "short_name": "__MSG_ext_short_name__",
    "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "3.14",
+   "version": "3.15",
    "web_accessible_resources": [ "upload_options.html", "seedboxes.html", "config.js", "content.js", "util.js", "jquery.js", "jquery-ui.js", "jquery.fancybox.js", "css/*.css", "css/ui-lightness/images/*.png", "images/*.png", "images/*.gif" ]
 }
