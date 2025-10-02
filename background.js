@@ -6,7 +6,7 @@ net.xirvik.seedbox = (function(my)
 	{
 		try_no: 0,
 
-		options: my.conf.default_options,
+		options: my.conf.options_default,
 		uploadFuncs:
 		{
 			"rutorrent": 'ruTorrentUpload',

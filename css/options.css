@@ -251,6 +251,7 @@ box
 	border-radius: 3px;
 	word-break: normal;
 	word-wrap: break-word;
+	z-index: 1;
 }
 
 #entry .hint a
