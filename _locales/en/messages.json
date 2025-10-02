@@ -21,7 +21,7 @@
       "message": "Cancel"
    },
    "capture_left_mouse_clicks": {
-      "message": "Capture left mouse clicks on torrent files"
+      "message": "Capture left mouse clicks on links with '.torrent' extension"
    },
    "client": {
       "message": "Client"
@@ -267,7 +267,7 @@
       "message": "Subscription type:"
    },
    "switched_on_for_only": {
-      "message": "Switched on for .torrent files only"
+      "message": "Switched on for links with '.torrent' extension only"
    },
    "test": {
       "message": "Test"
